@@ -14,10 +14,12 @@ end
 def msg_to_byte_array(message)
     message = message.bytes
     orig_len_in_bits = (8 * message.length) & 0xffffffffffffffff
+
     message << 0x80
     while message.length % 64 != 56
         message << 0
     end
+
     (message <<
         orig_len_in_bits
         .to_s(16)
@@ -52,11 +54,11 @@ def md5(message)
                 f = c ^ (b | ~d)
                 g = (7 * i) % 16
             end
-
             to_rotate = a + f + @constants[i] + (chunk[4*g...4*g+4]
                                                  .each_with_index
                                                  .map{|e,i| e << (8 * i)}
                                                  .reduce{|acc, e| acc | e})
+
             new_b = b + left_rotate(to_rotate, @rotate_amounts[i])
             a, b, c, d = d, new_b, b, c
         end
@@ -77,5 +79,6 @@ end
 
 require "digest"
 @door = "abbhdwsy"
+# md5 (@door)
 puts md5 (@door)
-puts Digest::MD5.hexdigest(@door)
+# puts Digest::MD5.hexdigest(@door)
