@@ -10,6 +10,7 @@ md5.o: src/md5.c
 
 .PHONY:
 clean:
-	rm main*
+	rm -r main* 
+	rm src/*.o 
 
 

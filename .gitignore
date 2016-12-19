@@ -1,3 +1,4 @@
 a.out
 vrun.out
 main*
+src/*.o
