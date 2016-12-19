@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
 #define bitswap(NUM) ((NUM>>24)&0xff) | ((NUM<<8)&0xff0000) | ((NUM>>8)&0xff00) | ((NUM<<24)&0xff000000)
 
 const unsigned long constants[64] =
@@ -60,6 +56,7 @@ struct Message* md5padding(char* msg) {
     }
 
 // TODO: proper bit shifting here instead of this garbage <<<
+// it won't work for anything longer than 32 bytes until this is fixed
     output_buffer[i] = orig_length_in_bits;
     for (++i; i % 64 != 0; i++) {
         output_buffer[i] = 0;
@@ -121,8 +118,6 @@ char *md5(char* msg) {
         acc[2] &= 0xffffffff;
         acc[3] += d;
         acc[3] &= 0xffffffff;
-
-
     }
     free(padded_msg->start);
     free(padded_msg);
@@ -140,6 +135,31 @@ char *md5(char* msg) {
 
 int main() {
     char *door = "abbhdwsy";
-    puts(md5(door));
+    char *buf = malloc(1048);
+    char *this;
+    for (int i = 0; i < 7777890; i++) {
+        sprintf(buf, "%s%i", door, i);
+        this = md5(buf);
+        if (strncmp(this, "00000", 5) == 0) {
+            puts(this);
+        }
+    }
     return 0;
+}
+
+__kernel void hello(__global char* string)
+{
+string[0] = 'H';
+string[1] = 'e';
+string[2] = 'l';
+string[3] = 'l';
+string[4] = 'o';
+string[5] = ',';
+string[6] = ' ';
+string[7] = 'W';
+string[8] = 'o';
+string[9] = 'r';
+string[10] = 'l';
+string[11] = 'd';
+string[12] = '!';
 }
