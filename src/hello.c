@@ -21,7 +21,7 @@ int main()
     char string[MEM_SIZE];
 
     FILE *fp;
-    char fileName[] = "./hello.cl";
+    char fileName[] = "./src/hello.cl";
     char *source_str;
     size_t source_size;
 
