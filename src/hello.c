@@ -55,6 +55,10 @@ int main()
     /* Build Kernel Program */
     ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 
+    if (ret != 0) {
+        printf("Something went wrong with building the program: error code: %i", ret);
+    }
+
     /* Create OpenCL Kernel */
     kernel = clCreateKernel(program, "hello", &ret);
 
