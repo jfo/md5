@@ -11,6 +11,7 @@ int main()
     cl_context context = NULL;
     cl_command_queue command_queue = NULL;
     cl_mem memobj = NULL;
+    cl_mem memobjinput = NULL;
     cl_program program = NULL;
     cl_kernel kernel = NULL;
     cl_platform_id platform_id = NULL;
@@ -45,9 +46,6 @@ int main()
     /* Create Command Queue */
     command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
 
-    /* Create Memory Buffer */
-    memobj = clCreateBuffer(context, CL_MEM_READ_WRITE,MEM_SIZE * sizeof(char), NULL, &ret);
-
     /* Create Kernel Program from the source */
     program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
             (const size_t *)&source_size, &ret);
@@ -62,8 +60,17 @@ int main()
     /* Create OpenCL Kernel */
     kernel = clCreateKernel(program, "hello", &ret);
 
+    /* Create Memory Buffer */
+    memobj = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
+    /* Create Memory Buffer */
+    memobjinput = clCreateBuffer(context, CL_MEM_READ_WRITE, 1, NULL, &ret);
+
     /* Set OpenCL Kernel Parameters */
     ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&memobj);
+    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&memobjinput);
+
+    int x = 65;
+    ret = clSetKernelArg(kernel, 2, sizeof(int), (void *)&x);
 
     /* Execute OpenCL Kernel */
     ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
