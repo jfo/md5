@@ -8,46 +8,35 @@
 
 int main()
 {
-    cl_device_id device_id = NULL;
-    cl_context context = NULL;
-    cl_command_queue command_queue = NULL;
-    cl_mem inputmem = NULL;
-    cl_mem outputmem = NULL;
-    cl_program program = NULL;
-    cl_kernel kernel = NULL;
-    cl_platform_id platform_id = NULL;
-    cl_uint ret_num_devices;
-    cl_uint ret_num_platforms;
-    cl_int ret;
-
-    char outputbuffer[MEM_SIZE];
-
-    FILE *fp;
-    char fileName[] = "./src/hello.cl";
-    char *source_str;
-    size_t source_size;
-
     /* Load the source code containing the kernel*/
-    fp = fopen(fileName, "r");
+    FILE *fp = fopen("./src/hello.cl", "r");
     if (!fp) {
         fprintf(stderr, "Failed to load kernel.\n");
         exit(1);
     }
-    source_str = (char*)malloc(MAX_SOURCE_SIZE);
-    source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+    char *source_str = (char*)malloc(MAX_SOURCE_SIZE);
+    size_t source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
     fclose(fp);
 
     /* Get Platform and Device Info */
+    cl_platform_id platform_id = NULL;
+    cl_device_id device_id = NULL;
+    cl_uint ret_num_devices;
+    cl_uint ret_num_platforms;
+    cl_int ret;
     ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
     ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_DEFAULT, 1, &device_id, &ret_num_devices);
 
     /* Create OpenCL context */
+    cl_context context = NULL;
     context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 
     /* Create Command Queue */
+    cl_command_queue command_queue = NULL;
     command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
 
     /* Create Kernel Program from the source */
+    cl_program program = NULL;
     program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
             (const size_t *)&source_size, &ret);
 
@@ -56,12 +45,17 @@ int main()
 
 
     /* Create OpenCL Kernel */
+    cl_kernel kernel = NULL;
     kernel = clCreateKernel(program, "hello", &ret);
 
+    cl_mem inputmem = NULL;
     inputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
+
+    cl_mem outputmem = NULL;
     outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
 
-    char inputbuffer[MEM_SIZE] = "this is\x65";
+    char inputbuffer[MEM_SIZE];
+    sprintf(inputbuffer, "abbhdwsy%i", 0);
     ret = clEnqueueWriteBuffer(command_queue, inputmem, CL_TRUE, 0,
             MEM_SIZE * sizeof(char), inputbuffer, 0, NULL, NULL);
 
@@ -72,6 +66,7 @@ int main()
     ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
+    char outputbuffer[MEM_SIZE];
     ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0,
             MEM_SIZE * sizeof(char),outputbuffer, 0, NULL, NULL);
 
