@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <OpenCL/opencl.h>
 
@@ -10,8 +11,8 @@ int main()
     cl_device_id device_id = NULL;
     cl_context context = NULL;
     cl_command_queue command_queue = NULL;
-    cl_mem memobj = NULL;
-    cl_mem memobjinput = NULL;
+    cl_mem inputmem = NULL;
+    cl_mem outputmem = NULL;
     cl_program program = NULL;
     cl_kernel kernel = NULL;
     cl_platform_id platform_id = NULL;
@@ -19,7 +20,7 @@ int main()
     cl_uint ret_num_platforms;
     cl_int ret;
 
-    char string[MEM_SIZE];
+    char outputbuffer[MEM_SIZE];
 
     FILE *fp;
     char fileName[] = "./src/hello.cl";
@@ -53,41 +54,37 @@ int main()
     /* Build Kernel Program */
     ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 
-    if (ret != 0) {
-        printf("Something went wrong with building the program: error code: %i", ret);
-    }
 
     /* Create OpenCL Kernel */
     kernel = clCreateKernel(program, "hello", &ret);
 
-    /* Create Memory Buffer */
-    memobj = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
-    /* Create Memory Buffer */
-    memobjinput = clCreateBuffer(context, CL_MEM_READ_WRITE, 1, NULL, &ret);
+    inputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
+    outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
 
-    /* Set OpenCL Kernel Parameters */
-    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&memobj);
-    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&memobjinput);
+    char inputbuffer[MEM_SIZE] = "this is\x65";
+    ret = clEnqueueWriteBuffer(command_queue, inputmem, CL_TRUE, 0,
+            MEM_SIZE * sizeof(char), inputbuffer, 0, NULL, NULL);
 
-    int x = 65;
-    ret = clSetKernelArg(kernel, 2, sizeof(int), (void *)&x);
+    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
+    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&inputmem);
 
     /* Execute OpenCL Kernel */
     ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
-    ret = clEnqueueReadBuffer(command_queue, memobj, CL_TRUE, 0,
-            MEM_SIZE * sizeof(char),string, 0, NULL, NULL);
+    ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0,
+            MEM_SIZE * sizeof(char),outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
-    puts(string);
+    puts(outputbuffer);
 
     /* Finalization */
     ret = clFlush(command_queue);
     ret = clFinish(command_queue);
     ret = clReleaseKernel(kernel);
     ret = clReleaseProgram(program);
-    ret = clReleaseMemObject(memobj);
+    ret = clReleaseMemObject(outputmem);
+    ret = clReleaseMemObject(inputmem);
     ret = clReleaseCommandQueue(command_queue);
     ret = clReleaseContext(context);
 
