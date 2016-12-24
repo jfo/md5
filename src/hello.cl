@@ -6,14 +6,9 @@ unsigned long left_rotate(unsigned long x, int amount) {
 __kernel void hello(
         __global long* output,
         __global char* input,
-        __global long* constants
+        __global long* constants,
+        __global long* rotate_amounts
 ) {
-
-    const unsigned long rotate_amounts[64] =
-    { 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-      5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-      4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-      6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21 };
 
     unsigned long acc[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 

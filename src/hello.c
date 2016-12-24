@@ -26,6 +26,11 @@ unsigned long constants[64] =
  0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
  0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391 };
 
+unsigned long rotate_amounts[64] =
+{ 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21 };
 
 int main()
 {
@@ -84,11 +89,18 @@ int main()
 
     ret = clEnqueueWriteBuffer(command_queue, constantsmem, CL_TRUE, 0,
             64 * sizeof(long), constants, 0, NULL, NULL);
+
+    cl_mem rotatemem = NULL;
+    rotatemem = clCreateBuffer(context, CL_MEM_READ_ONLY, 64 * sizeof(long), NULL, &ret);
+
+    ret = clEnqueueWriteBuffer(command_queue, rotatemem, CL_TRUE, 0,
+            64 * sizeof(long), rotate_amounts, 0, NULL, NULL);
     printf("\n\nError Code: %i\n", ret);
 
     ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
     ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&inputmem);
     ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&constantsmem);
+    ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&rotatemem);
 
     /* Execute OpenCL Kernel */
     ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
