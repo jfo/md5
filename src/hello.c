@@ -71,11 +71,12 @@ int main()
             MEM_SIZE * sizeof(char), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
+    printf("\n");
     for (int i=0; i < 4; i++)
-        printf("%#010x ", outputbuffer[i]);
+        printf("%#010x ", (unsigned int)outputbuffer[i]);
 
 
-    printf("\n\nError Code: %i\n", ret);
+    /* printf("\n\nError Code: %i\n", ret); */
 
     /* Finalization */
     ret = clFlush(command_queue);

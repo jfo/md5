@@ -20,4 +20,7 @@ clean:
 run: opencl
 	./hello
 
+runmain: main
+	./main
+
 
