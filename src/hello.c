@@ -66,12 +66,16 @@ int main()
     ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
-    char outputbuffer[MEM_SIZE];
+    long outputbuffer[MEM_SIZE];
     ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0,
-            MEM_SIZE * sizeof(char),outputbuffer, 0, NULL, NULL);
+            MEM_SIZE * sizeof(char), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
-    puts(outputbuffer);
+    for (int i=0; i < 4; i++)
+        printf("%#010x ", outputbuffer[i]);
+
+
+    printf("\n\nError Code: %i\n", ret);
 
     /* Finalization */
     ret = clFlush(command_queue);
