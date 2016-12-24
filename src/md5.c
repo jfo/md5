@@ -130,8 +130,5 @@ char *md5digest(char* msg) {
             bitswap(acc[3])
           );
 
-    for (int i=0; i < 4; i++)
-        printf("%#010x ", (unsigned int)acc[i]);
-
     return outstr;
 }

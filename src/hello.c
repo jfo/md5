@@ -6,6 +6,8 @@
 #define MEM_SIZE (128)
 #define MAX_SOURCE_SIZE (0x100000)
 
+#define bitswap(NUM) ((NUM>>24)&0xff) | ((NUM<<8)&0xff0000) | ((NUM>>8)&0xff00) | ((NUM<<24)&0xff000000)
+
 int main()
 {
     /* Load the source code containing the kernel*/
@@ -71,10 +73,15 @@ int main()
             MEM_SIZE * sizeof(char), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
-    printf("\n");
-    for (int i=0; i < 4; i++)
-        printf("%#010x ", (unsigned int)outputbuffer[i]);
+    char *outstr = malloc(128);
+    sprintf(outstr, "%08lx%08lx%08lx%08lx",
+            bitswap(outputbuffer[0]),
+            bitswap(outputbuffer[1]),
+            bitswap(outputbuffer[2]),
+            bitswap(outputbuffer[3])
+          );
 
+    printf("%s\n", outstr);
 
     /* printf("\n\nError Code: %i\n", ret); */
 
