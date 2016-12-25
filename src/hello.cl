@@ -5,14 +5,16 @@ unsigned long left_rotate(unsigned long x, int amount) {
 
 __kernel void hello(
         __global long* output,
-        __global char* input,
         __global long* constants,
-        __global long* rotate_amounts
+        __global long* rotate_amounts,
+        __global int* index
 ) {
 
     unsigned long acc[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
     unsigned char output_buffer[64];
+
+    char input[9] = "abbhdwsy";
 
     unsigned long orig_length_in_bytes;
     for (orig_length_in_bytes = 0; input[orig_length_in_bytes] != 0x0; ++orig_length_in_bytes);
@@ -82,6 +84,9 @@ __kernel void hello(
         acc[3] += d;
         acc[3] &= 0xffffffff;
     }
+
+    printf("%i ", index[0]);
+    index++;
 
     for (int i=0; i < 4; i++)
         output[i] = acc[i];

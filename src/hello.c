@@ -69,41 +69,34 @@ int main()
     /* Build Kernel Program */
     ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 
-
     /* Create OpenCL Kernel */
     cl_kernel kernel = NULL;
     kernel = clCreateKernel(program, "hello", &ret);
 
     cl_mem outputmem = NULL;
     outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
-
-    cl_mem inputmem = NULL;
-    inputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
-    char inputbuffer[MEM_SIZE];
-    sprintf(inputbuffer, "abbhdwsy%i", 0);
-    ret = clEnqueueWriteBuffer(command_queue, inputmem, CL_TRUE, 0,
-            MEM_SIZE * sizeof(char), inputbuffer, 0, NULL, NULL);
+    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
 
     cl_mem constantsmem = NULL;
     constantsmem = clCreateBuffer(context, CL_MEM_READ_ONLY, 64 * sizeof(long), NULL, &ret);
-
     ret = clEnqueueWriteBuffer(command_queue, constantsmem, CL_TRUE, 0,
             64 * sizeof(long), constants, 0, NULL, NULL);
+    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&constantsmem);
 
     cl_mem rotatemem = NULL;
     rotatemem = clCreateBuffer(context, CL_MEM_READ_ONLY, 64 * sizeof(long), NULL, &ret);
-
     ret = clEnqueueWriteBuffer(command_queue, rotatemem, CL_TRUE, 0,
             64 * sizeof(long), rotate_amounts, 0, NULL, NULL);
-    printf("\n\nError Code: %i\n", ret);
+    ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&rotatemem);
 
-    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
-    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&inputmem);
-    ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&constantsmem);
-    ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&rotatemem);
+    cl_mem indexmem = NULL;
+    indexmem = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(int), NULL, &ret);
+    ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&indexmem);
 
     /* Execute OpenCL Kernel */
-    ret = clEnqueueTask(command_queue, kernel, 0, NULL,NULL);
+    size_t gws[2] = { 100 };
+    size_t lws[2] = { 1 };
+    ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, gws, lws, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
     long outputbuffer[MEM_SIZE];
@@ -111,15 +104,14 @@ int main()
             MEM_SIZE * sizeof(char), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
-    char *outstr = malloc(128);
-    sprintf(outstr, "%08lx%08lx%08lx%08lx",
-            bitswap(outputbuffer[0]),
-            bitswap(outputbuffer[1]),
-            bitswap(outputbuffer[2]),
-            bitswap(outputbuffer[3])
-          );
+    /* printf("%08lx%08lx%08lx%08lx", */
+    /*         bitswap(outputbuffer[0]), */
+    /*         bitswap(outputbuffer[1]), */
+    /*         bitswap(outputbuffer[2]), */
+    /*         bitswap(outputbuffer[3]) */
+    /*       ); */
 
-    printf("%s\n", outstr);
+    /* printf("%i\n", ret); */
 
 
     /* Finalization */
@@ -128,7 +120,6 @@ int main()
     ret = clReleaseKernel(kernel);
     ret = clReleaseProgram(program);
     ret = clReleaseMemObject(outputmem);
-    ret = clReleaseMemObject(inputmem);
     ret = clReleaseCommandQueue(command_queue);
     ret = clReleaseContext(context);
 
