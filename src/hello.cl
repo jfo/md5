@@ -85,8 +85,7 @@ __kernel void hello(
         acc[3] &= 0xffffffff;
     }
 
-    printf("%i ", index[0]);
-    index++;
+    printf("%i ", atom_inc(&index[0]));
 
     for (int i=0; i < 4; i++)
         output[i] = acc[i];
