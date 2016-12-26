@@ -5,8 +5,8 @@
 
 #define MEM_SIZE (128)
 #define MAX_SOURCE_SIZE (0x100000)
-
 #define bitswap(NUM) ((NUM>>24)&0xff) | ((NUM<<8)&0xff0000) | ((NUM>>8)&0xff00) | ((NUM<<24)&0xff000000)
+
 
 unsigned long constants[64] =
 { 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
@@ -104,16 +104,16 @@ int main()
             MEM_SIZE * sizeof(int), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
-    /* printf("%08lx%08lx%08lx%08lx", */
-    /*         bitswap(outputbuffer[0]), */
-    /*         bitswap(outputbuffer[1]), */
-    /*         bitswap(outputbuffer[2]), */
-    /*         bitswap(outputbuffer[3]) */
+    /* printf("%08lx%08lx%08lx%08lx \n", */
+    /*         outputbuffer[0], */
+    /*         outputbuffer[1], */
+    /*         outputbuffer[2], */
+    /*         outputbuffer[3] */
     /*       ); */
 
 
-    for(int i = 0; i < 10; i++)
-        printf("%lu\n", outputbuffer[i]);
+    /* for(int i = 0; i < 10; i++) */
+    /*     printf("%lu\n", outputbuffer[i]); */
 
     /* printf("%i\n", ret); */
 

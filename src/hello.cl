@@ -1,3 +1,5 @@
+#define bitswap(NUM) ((NUM>>24)&0xff) | ((NUM<<8)&0xff0000) | ((NUM>>8)&0xff00) | ((NUM<<24)&0xff000000)
+
 unsigned long left_rotate(unsigned long x, int amount) {
     x = x & 0xffffffff;
     return ((x << amount) | (x >> (32 - amount))) & 0xffffffff;
@@ -14,7 +16,8 @@ __kernel void hello(
 
     unsigned char output_buffer[64];
 
-    char input[9] = "abbhdwsy";
+    /* char input[9] = "abbhdwsy"; */
+    char input[16] = "abbhdwsy1739529";
 
     unsigned long orig_length_in_bytes;
     for (orig_length_in_bytes = 0; input[orig_length_in_bytes] != 0x0; ++orig_length_in_bytes);
@@ -85,9 +88,22 @@ __kernel void hello(
         acc[3] &= 0xffffffff;
     }
 
+
+    for (int i=0; i < 4; i++)
+        acc[i] = bitswap(acc[i]);
+
     int idx = atom_inc(&index[0]);
     output[idx] = get_global_id(0);
 
-    /* for (int i=0; i < 4; i++) */
-    /*     output[i] = acc[i]; */
+    for (int i=0; i < 4; i++)
+        output[i] = acc[i];
+
+    if ((acc[0] | 0x00000fff) == 0x00000fff) {
+        printf("%08lx%08lx%08lx%08lx \n",
+                acc[0],
+                acc[1],
+                acc[2],
+                acc[3]
+              );
+    }
 }
