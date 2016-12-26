@@ -85,8 +85,9 @@ __kernel void hello(
         acc[3] &= 0xffffffff;
     }
 
-    printf("%i ", atom_inc(&index[0]));
+    int idx = atom_inc(&index[0]);
+    output[idx] = get_global_id(0);
 
-    for (int i=0; i < 4; i++)
-        output[i] = acc[i];
+    /* for (int i=0; i < 4; i++) */
+    /*     output[i] = acc[i]; */
 }

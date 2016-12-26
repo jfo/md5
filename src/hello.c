@@ -74,7 +74,7 @@ int main()
     kernel = clCreateKernel(program, "hello", &ret);
 
     cl_mem outputmem = NULL;
-    outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(char), NULL, &ret);
+    outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(int), NULL, &ret);
     ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
 
     cl_mem constantsmem = NULL;
@@ -94,14 +94,14 @@ int main()
     ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&indexmem);
 
     /* Execute OpenCL Kernel */
-    size_t gws[2] = { 100 };
+    size_t gws[2] = { 10 };
     size_t lws[2] = { 1 };
     ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, gws, lws, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
     long outputbuffer[MEM_SIZE];
     ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0,
-            MEM_SIZE * sizeof(char), outputbuffer, 0, NULL, NULL);
+            MEM_SIZE * sizeof(int), outputbuffer, 0, NULL, NULL);
 
     /* Display Result */
     /* printf("%08lx%08lx%08lx%08lx", */
@@ -110,6 +110,10 @@ int main()
     /*         bitswap(outputbuffer[2]), */
     /*         bitswap(outputbuffer[3]) */
     /*       ); */
+
+
+    for(int i = 0; i < 10; i++)
+        printf("%lu\n", outputbuffer[i]);
 
     /* printf("%i\n", ret); */
 
