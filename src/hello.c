@@ -94,8 +94,8 @@ int main()
     ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&indexmem);
 
     /* Execute OpenCL Kernel */
-    size_t gws[2] = { 10 };
-    size_t lws[2] = { 1 };
+    size_t gws[2] = { 8000000 };
+    size_t lws[2] = { 2 };
     ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, gws, lws, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */

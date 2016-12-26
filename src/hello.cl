@@ -16,8 +16,20 @@ __kernel void hello(
 
     unsigned char output_buffer[64];
 
-    /* char input[9] = "abbhdwsy"; */
-    char input[16] = "abbhdwsy1739529";
+    char input[16] = "abbhdwsy";
+    char med[16] = { 0 } ;
+    int num = get_global_id(0);
+    int in = 0;
+    while (num != 0) {
+        int rem = num % 10;
+        med[in++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
+        num = num/10;
+    }
+    int thing = 8;
+    while (in != 0) {
+        in = in - 1;
+        input[thing++] = med[in];
+    }
 
     unsigned long orig_length_in_bytes;
     for (orig_length_in_bytes = 0; input[orig_length_in_bytes] != 0x0; ++orig_length_in_bytes);
@@ -99,7 +111,7 @@ __kernel void hello(
         output[i] = acc[i];
 
     if ((acc[0] | 0x00000fff) == 0x00000fff) {
-        printf("%08lx%08lx%08lx%08lx \n",
+        printf("%08lx%08lx%08lx%08lx\n",
                 acc[0],
                 acc[1],
                 acc[2],
