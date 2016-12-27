@@ -44,11 +44,11 @@ static struct Message* md5padding(char* msg) {
         padded_length += 1;
     }
 
-    unsigned char *output_buffer = malloc(padded_length + 1);
+    unsigned char *output_buffer = malloc(padded_length);
     memcpy(output_buffer, msg, orig_length_in_bytes);
 
-    int i;
     output_buffer[orig_length_in_bytes] = 0x80;
+    int i;
     for (i = orig_length_in_bytes + 1; i % 64 != 56; i++) {
         output_buffer[i] = 0x0;
     }
