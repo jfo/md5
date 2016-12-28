@@ -6,14 +6,11 @@ unsigned long left_rotate(unsigned long x, int amount) {
 }
 
 __kernel void hello(
-        __global long* output,
         __global long* constants,
-        __global long* rotate_amounts,
-        __global int* index
+        __global long* rotate_amounts
 ) {
 
     unsigned long acc[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
-
     unsigned char output_buffer[64];
 
     char input[16] = "abbhdwsy";
@@ -54,8 +51,9 @@ __kernel void hello(
 
 // TODO: proper bit shifting here instead of this garbage <<<
     output_buffer[i] = orig_length_in_bits;
-    for (++i; i % 64 != 0; i++) {
-        output[i] = 0;
+    i++;
+    for (; i % 64 != 0; i++) {
+        output_buffer[i] = 0;
     }
 // TODO: proper bit shifting here instead of this garbage ^^^
 
@@ -104,11 +102,11 @@ __kernel void hello(
     for (int i=0; i < 4; i++)
         acc[i] = bitswap(acc[i]);
 
-    int idx = atom_inc(&index[0]);
-    output[idx] = get_global_id(0);
+    /* int idx = atom_inc(&index[0]); */
+    /* output[idx] = get_global_id(0); */
 
-    for (int i=0; i < 4; i++)
-        output[i] = acc[i];
+    /* for (int i=0; i < 4; i++) */
+    /*     output[i] = acc[i]; */
 
     if ((acc[0] | 0x00000fff) == 0x00000fff) {
         printf("%08lx%08lx%08lx%08lx\n",

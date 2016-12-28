@@ -73,35 +73,35 @@ int main()
     cl_kernel kernel = NULL;
     kernel = clCreateKernel(program, "hello", &ret);
 
-    cl_mem outputmem = NULL;
-    outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(int), NULL, &ret);
-    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem);
+    /* cl_mem outputmem = NULL; */
+    /* outputmem = clCreateBuffer(context, CL_MEM_READ_WRITE, MEM_SIZE * sizeof(int), NULL, &ret); */
+    /* ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&outputmem); */
 
     cl_mem constantsmem = NULL;
     constantsmem = clCreateBuffer(context, CL_MEM_READ_ONLY, 64 * sizeof(long), NULL, &ret);
     ret = clEnqueueWriteBuffer(command_queue, constantsmem, CL_TRUE, 0,
             64 * sizeof(long), constants, 0, NULL, NULL);
-    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&constantsmem);
+    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&constantsmem);
 
     cl_mem rotatemem = NULL;
     rotatemem = clCreateBuffer(context, CL_MEM_READ_ONLY, 64 * sizeof(long), NULL, &ret);
     ret = clEnqueueWriteBuffer(command_queue, rotatemem, CL_TRUE, 0,
             64 * sizeof(long), rotate_amounts, 0, NULL, NULL);
-    ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&rotatemem);
+    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&rotatemem);
 
-    cl_mem indexmem = NULL;
-    indexmem = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(int), NULL, &ret);
-    ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&indexmem);
+    /* cl_mem indexmem = NULL; */
+    /* indexmem = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(int), NULL, &ret); */
+    /* ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&indexmem); */
 
     /* Execute OpenCL Kernel */
-    size_t gws[2] = { 8000000 };
-    size_t lws[2] = { 2 };
+    size_t gws[1] = { 8000000 };
+    size_t lws[1] = { 2 };
     ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, gws, lws, 0, NULL,NULL);
 
     /* Copy results from the memory buffer */
-    long outputbuffer[MEM_SIZE];
-    ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0,
-            MEM_SIZE * sizeof(int), outputbuffer, 0, NULL, NULL);
+    /* long outputbuffer[MEM_SIZE]; */
+    /* ret = clEnqueueReadBuffer(command_queue, outputmem, CL_TRUE, 0, */
+    /*         MEM_SIZE * sizeof(int), outputbuffer, 0, NULL, NULL); */
 
     /* Display Result */
     /* printf("%08lx%08lx%08lx%08lx \n", */
@@ -123,7 +123,7 @@ int main()
     ret = clFinish(command_queue);
     ret = clReleaseKernel(kernel);
     ret = clReleaseProgram(program);
-    ret = clReleaseMemObject(outputmem);
+    /* ret = clReleaseMemObject(outputmem); */
     ret = clReleaseCommandQueue(command_queue);
     ret = clReleaseContext(context);
 
