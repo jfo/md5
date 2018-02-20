@@ -1,3 +1,3 @@
 Read here:
 
-blog.jfo.click
+https://blog.jfo.click/advent-of-learning-about-md5-and-opencl/
